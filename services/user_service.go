@@ -14,7 +14,7 @@ func AddUser(user models.User) error {
 	var existingUser models.User
 	result := db.Where("username = ? OR email = ?", user.Username, user.Email).First(&existingUser)
 	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
-		log.Println("Ошибка при проверке существующего пользователя:", result.Error)
+		log.Println("Ошибка при проверке пользователя:", result.Error)
 		return result.Error
 	}
 	if existingUser.ID != 0 {
@@ -23,37 +23,46 @@ func AddUser(user models.User) error {
 
 	result = db.Create(&user)
 	if result.Error != nil {
-		log.Println("Ошибка при добавлении пользователя в базу данных:", result.Error)
+		log.Println("Ошибка при добавлении пользователя:", result.Error)
 		return result.Error
 	}
 
 	return nil
 }
 
-func GetAllUsers() ([]models.User, error) {
+func GetAllUsers(page, limit int) ([]models.User, error) {
 	db := database.GetDB()
+
 	var users []models.User
-	result := db.Find(&users)
-	return users, result.Error
+	offset := (page - 1) * limit
+
+	result := db.Limit(limit).Offset(offset).Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return users, nil
 }
 
 func GetUserByID(id uint) (models.User, error) {
 	db := database.GetDB()
+
 	var user models.User
 	result := db.First(&user, id)
 	return user, result.Error
 }
 
-func UpdateUser(id uint, updated models.User) error {
+func UpdateUser(id uint, updatedUser models.User) error {
 	db := database.GetDB()
+
 	var user models.User
 	if err := db.First(&user, id).Error; err != nil {
 		return err
 	}
 
-	user.Username = updated.Username
-	user.Email = updated.Email
-	user.Password = updated.Password
+	user.Username = updatedUser.Username
+	user.Email = updatedUser.Email
+	user.Password = updatedUser.Password
 
 	return db.Save(&user).Error
 }

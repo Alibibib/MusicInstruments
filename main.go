@@ -1,29 +1,51 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
 	"MusicInstruments/database"
 	"MusicInstruments/handlers"
-	"github.com/gorilla/mux"
+	"MusicInstruments/middleware"
+	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func main() {
 	err := database.InitDB()
 	if err != nil {
-		log.Fatal("Ошибка подключения к базе данных:", err)
+		log.Fatal("Ошибка подключения к БД:", err)
 	}
 
-	r := mux.NewRouter()
+	r := gin.Default()
 
-	r.HandleFunc("/users", handlers.AddUserHandler).Methods("POST")
-	r.HandleFunc("/users", handlers.GetAllUsersHandler).Methods("GET")
-	r.HandleFunc("/users/{id}", handlers.GetUserByIDHandler).Methods("GET")
-	r.HandleFunc("/users/{id}", handlers.UpdateUserHandler).Methods("PUT")
-	r.HandleFunc("/users/{id}", handlers.DeleteUserHandler).Methods("DELETE")
+	// Auth routes
+	r.POST("/register", handlers.RegisterHandler)
+	r.POST("/login", handlers.LoginHandler)
 
-	// Запускаем HTTP сервер
-	log.Println("http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	// Защищённые
+	auth := r.Group("/")
+	auth.Use(middleware.AuthMiddleware())
+	{
+		auth.GET("/users", handlers.GetAllUsersHandler)
+		auth.GET("/users/:id", handlers.GetUserByIDHandler)
+		auth.PUT("/users/:id", handlers.UpdateUserHandler)
+		auth.DELETE("/users/:id", handlers.DeleteUserHandler)
+
+		// Эндпоинты для музыкальных инструментов
+		instrumentHandler := handlers.NewMusicalInstrumentHandler()
+		auth.GET("/instruments", instrumentHandler.GetAllHandler)
+		auth.GET("/instruments/:id", instrumentHandler.GetByIDHandler)
+		auth.POST("/instruments", instrumentHandler.CreateHandler)
+		auth.PUT("/instruments/:id", instrumentHandler.UpdateHandler)
+		auth.DELETE("/instruments/:id", instrumentHandler.DeleteHandler)
+
+		// Эндпоинты для категорий
+		categoryHandler := handlers.NewCategoryHandler()
+		auth.GET("/categories", categoryHandler.GetAllHandler)
+		auth.GET("/categories/:id", categoryHandler.GetByIDHandler)
+		auth.POST("/categories", categoryHandler.CreateHandler)
+		auth.PUT("/categories/:id", categoryHandler.UpdateHandler)
+		auth.DELETE("/categories/:id", categoryHandler.DeleteHandler)
+	}
+
+	log.Println("Сервер запущен на http://localhost:8080")
+	r.Run(":8080")
 }
