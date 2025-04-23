@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	// Инициализация базы данных
 	err := database.InitDB()
 	if err != nil {
 		log.Fatal("Ошибка подключения к БД:", err)
@@ -16,11 +17,9 @@ func main() {
 
 	r := gin.Default()
 
-	// Auth routes
 	r.POST("/register", handlers.RegisterHandler)
 	r.POST("/login", handlers.LoginHandler)
 
-	// Защищённые
 	auth := r.Group("/")
 	auth.Use(middleware.AuthMiddleware())
 	{
@@ -29,7 +28,6 @@ func main() {
 		auth.PUT("/users/:id", handlers.UpdateUserHandler)
 		auth.DELETE("/users/:id", handlers.DeleteUserHandler)
 
-		// Эндпоинты для музыкальных инструментов
 		instrumentHandler := handlers.NewMusicalInstrumentHandler()
 		auth.GET("/instruments", instrumentHandler.GetAllHandler)
 		auth.GET("/instruments/:id", instrumentHandler.GetByIDHandler)
@@ -37,7 +35,6 @@ func main() {
 		auth.PUT("/instruments/:id", instrumentHandler.UpdateHandler)
 		auth.DELETE("/instruments/:id", instrumentHandler.DeleteHandler)
 
-		// Эндпоинты для категорий
 		categoryHandler := handlers.NewCategoryHandler()
 		auth.GET("/categories", categoryHandler.GetAllHandler)
 		auth.GET("/categories/:id", categoryHandler.GetByIDHandler)

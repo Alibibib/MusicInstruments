@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var jwtKey = []byte("super_secret_key") // ❗замени в .env в будущем
+var jwtKey = []byte("super_secret_key")
 
 type Claims struct {
 	UserID uint
@@ -20,13 +20,11 @@ type Claims struct {
 func Register(user models.User) error {
 	db := database.GetDB()
 
-	// Проверка на существующего
 	var existing models.User
 	if err := db.Where("email = ?", user.Email).First(&existing).Error; err == nil {
 		return fmt.Errorf("пользователь с таким email уже существует")
 	}
 
-	// Хешируем пароль
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -48,7 +46,6 @@ func Login(email, password string) (string, error) {
 		return "", fmt.Errorf("неверный email или пароль")
 	}
 
-	// Генерируем токен
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		UserID: user.ID,

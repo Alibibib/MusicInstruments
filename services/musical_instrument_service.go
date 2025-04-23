@@ -7,19 +7,16 @@ import (
 	"log"
 )
 
-// MusicalInstrumentService структура сервиса для музыкальных инструментов
 type MusicalInstrumentService struct {
 	DB *gorm.DB
 }
 
-// NewMusicalInstrumentService создает новый экземпляр сервиса для музыкальных инструментов
 func NewMusicalInstrumentService() *MusicalInstrumentService {
 	return &MusicalInstrumentService{
 		DB: database.GetDB(),
 	}
 }
 
-// Create музыкальный инструмент
 func (service *MusicalInstrumentService) Create(instrument *models.MusicalInstrument) error {
 	if err := service.DB.Create(instrument).Error; err != nil {
 		log.Println("Ошибка при создании инструмента:", err)
@@ -28,17 +25,22 @@ func (service *MusicalInstrumentService) Create(instrument *models.MusicalInstru
 	return nil
 }
 
-// GetAll возвращает все музыкальные инструменты
-func (service *MusicalInstrumentService) GetAll() ([]models.MusicalInstrument, error) {
+// Метод GetAll без пагинации с фильтрацией по категории
+func (service *MusicalInstrumentService) GetAll(categoryID int) ([]models.MusicalInstrument, error) {
 	var instruments []models.MusicalInstrument
-	if err := service.DB.Preload("Category").Find(&instruments).Error; err != nil {
-		log.Println("Ошибка при получении инструментов:", err)
+
+	// Запрос с фильтрацией по категории
+	query := service.DB.Preload("Category")
+	if categoryID > 0 {
+		query = query.Where("category_id = ?", categoryID)
+	}
+
+	if err := query.Find(&instruments).Error; err != nil {
 		return nil, err
 	}
 	return instruments, nil
 }
 
-// GetByID возвращает инструмент по ID
 func (service *MusicalInstrumentService) GetByID(id uint) (*models.MusicalInstrument, error) {
 	var instrument models.MusicalInstrument
 	if err := service.DB.Preload("Category").First(&instrument, id).Error; err != nil {
@@ -48,7 +50,6 @@ func (service *MusicalInstrumentService) GetByID(id uint) (*models.MusicalInstru
 	return &instrument, nil
 }
 
-// Update обновляет музыкальный инструмент
 func (service *MusicalInstrumentService) Update(id uint, instrument *models.MusicalInstrument) error {
 	if err := service.DB.Model(&models.MusicalInstrument{}).Where("id = ?", id).Updates(instrument).Error; err != nil {
 		log.Println("Ошибка при обновлении инструмента:", err)
@@ -57,7 +58,6 @@ func (service *MusicalInstrumentService) Update(id uint, instrument *models.Musi
 	return nil
 }
 
-// Delete удаляет музыкальный инструмент
 func (service *MusicalInstrumentService) Delete(id uint) error {
 	if err := service.DB.Delete(&models.MusicalInstrument{}, id).Error; err != nil {
 		log.Println("Ошибка при удалении инструмента:", err)
