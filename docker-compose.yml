@@ -8,6 +8,7 @@ services:
       - "8080:8080"
     depends_on:
       - db
+    command: ["/wait-for-it.sh", "music_db:5432", "--", "./musicinstruments"]
     environment:
       - DB_HOST=db
       - DB_PORT=5432

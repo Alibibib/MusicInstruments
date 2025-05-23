@@ -18,7 +18,7 @@ func InitDB() error {
 	}
 	log.Println("Подключение к базе данных установлено")
 
-	err = db.AutoMigrate(&models.MusicalInstrument{}, &models.Category{}, &models.User{}) // указывай все свои модели
+	err = db.AutoMigrate(&models.Role{}, &models.User{}, &models.MusicalInstrument{}, &models.Category{}, models.Cart{}, &models.CartItem{})
 	if err != nil {
 		return err
 	}

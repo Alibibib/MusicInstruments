@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Регистрация</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 400px;
+      margin: 80px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #444;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #28a745; /* зеленый */
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #registerMessage {
+      margin-top: 15px;
+      text-align: center;
+    }
+    .text-danger {
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+
+{{ template "header.html" . }}
+
+<div class="container">
+  <h1>Регистрация</h1>
+
+  <form id="registerForm" novalidate>
+    <label for="username">Имя пользователя:</label>
+    <input type="text" name="username" id="username" required>
+
+    <label for="email">Email:</label>
+    <input type="email" name="email" id="email" required>
+
+    <label for="password">Пароль:</label>
+    <input type="password" name="password" id="password" required>
+
+    <button type="submit">Зарегистрироваться</button>
+  </form>
+
+  <p id="registerMessage"></p>
+</div>
+
+<script src="/static/js/script.js" defer></script>
+
+<script>
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const data = {
+      username: form.username.value,
+      email: form.email.value,
+      password: form.password.value,
+    };
+    const res = await registerUser(data);
+    const msgElem = document.getElementById('registerMessage');
+    if (res.success) {
+      window.location.href = '/login';
+    } else {
+      msgElem.className = 'text-danger';
+      msgElem.textContent = 'Ошибка: ' + res.error;
+    }
+  });
+</script>
+
+</body>
+</html>

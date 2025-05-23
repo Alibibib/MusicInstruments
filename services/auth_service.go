@@ -31,6 +31,8 @@ func Register(user models.User) error {
 	}
 	user.Password = string(hashedPassword)
 
+	user.RoleID = 2
+
 	return db.Create(&user).Error
 }
 

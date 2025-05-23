@@ -6,6 +6,7 @@ type MusicalInstrument struct {
 	Type        string  `json:"type"`
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
+	PhotoURL    string  `json:"photo_url"`
 
 	CategoryID uint     `json:"category_id"`
 	Category   Category `json:"category"`

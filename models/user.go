@@ -5,5 +5,6 @@ type User struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	Role     string `json:"role" gorm:"default:user"`
+	RoleID   uint   `json:"role_id"`
+	Role     Role   `json:"role" gorm:"foreignKey:RoleID"`
 }

@@ -1,0 +1,161 @@
+<body>
+{{ template "header.html" . }}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .mt-5 {
+        margin-top: 3rem;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .col-md-4 {
+        flex: 0 0 calc(33.333% - 20px);
+        box-sizing: border-box;
+    }
+
+    .mb-4 {
+        margin-bottom: 1.5rem;
+    }
+
+    .card {
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        height: 700px; /* увеличена высота карточки */
+        overflow: hidden;
+    }
+
+    .card-img-top {
+        width: 100%;
+        object-fit: cover;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        height: 400px; /* увеличена высота изображения */
+    }
+
+    .card-body {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .card-title {
+        margin: 0 0 10px 0;
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .card-text {
+        flex-grow: 0;
+        margin-bottom: 0.75rem;
+    }
+
+    .fw-bold {
+        font-weight: 700;
+    }
+
+    .mt-auto {
+        margin-top: auto;
+    }
+
+    .card-footer {
+        padding: 10px 15px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid transparent;
+        padding: 5px 12px;
+        font-size: 0.875rem;
+        border-radius: 4px;
+        transition: background-color 0.15s ease-in-out;
+        text-decoration: none;
+        color: white;
+        user-select: none;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .btn-outline-primary {
+        color: #007bff;
+        background-color: transparent;
+        border-color: #007bff;
+    }
+
+    .btn-outline-primary:hover {
+        color: white;
+        background-color: #007bff;
+        border-color: #007bff;
+        text-decoration: none;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row">
+        {{ range .Instruments }}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 d-flex flex-column">
+                <img src="{{ .PhotoURL }}" class="card-img-top" alt="Фото {{ .Name }}">
+                <div class="card-body flex-grow-1 d-flex flex-column">
+                    <h5 class="card-title">{{ .Name }}</h5>
+                    <p class="card-text">{{ .Description }}</p>
+                    <p class="card-text fw-bold mt-auto">{{ .Price }} $</p>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <button class="btn btn-success btn-sm add-to-cart-btn" data-id="{{ .ID }}">Добавить в корзину</button>
+                    <a href="/product/{{ .ID }}" class="btn btn-outline-primary btn-sm">Подробнее</a>
+                </div>
+            </div>
+        </div>
+        {{ else }}
+        <p>Нет доступных инструментов.</p>
+        {{ end }}
+    </div>
+</div>
+
+<script src="/static/js/script.js" defer></script>
+</body>

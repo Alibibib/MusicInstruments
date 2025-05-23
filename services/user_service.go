@@ -63,6 +63,7 @@ func UpdateUser(id uint, updatedUser models.User) error {
 	user.Username = updatedUser.Username
 	user.Email = updatedUser.Email
 	user.Password = updatedUser.Password
+	user.RoleID = updatedUser.RoleID // обновление роли
 
 	return db.Save(&user).Error
 }

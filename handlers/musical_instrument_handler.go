@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"MusicInstruments/database"
 	"MusicInstruments/models"
 	"MusicInstruments/services"
 	"github.com/gin-gonic/gin"
@@ -75,4 +76,14 @@ func (h *MusicalInstrumentHandler) DeleteHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Инструмент удалён"})
+}
+
+func GetAllCategories(c *gin.Context) {
+	var categories []models.Category
+	err := database.GetDB().Find(&categories).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка получения категорий"})
+		return
+	}
+	c.JSON(http.StatusOK, categories)
 }
